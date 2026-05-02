@@ -1,4 +1,7 @@
-export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+// On Vercel: uses relative /api (same domain, serverless function)
+// On local dev: falls back to localhost:5000
+export const API_URL = import.meta.env.VITE_API_URL ||
+  (import.meta.env.DEV ? 'http://localhost:5000/api' : '/api');
 
 export const saveCompressionRecord = async (data: {
   fileName: string;

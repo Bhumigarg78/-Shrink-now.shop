@@ -1,0 +1,212 @@
+:root {
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  /* Dark Theme (Default) */
+  --bg-color: #0a0a0c;
+  --surface-color: #16161a;
+  --surface-hover: #1c1c22;
+  --primary-gradient: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+  --secondary-gradient: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+  --accent-color: #3b82f6;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --glass-bg: rgba(22, 22, 26, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  
+  color-scheme: dark;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+[data-theme='light'] {
+  --bg-color: #f8fafc;
+  --surface-color: #ffffff;
+  --surface-hover: #f1f5f9;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --border-color: rgba(15, 23, 42, 0.1);
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(15, 23, 42, 0.08);
+  
+  color-scheme: light;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+}
+
+.btn-primary {
+  background: var(--primary-gradient);
+  border: none;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.btn-secondary:hover {
+  background: var(--surface-hover);
+  border-color: var(--text-secondary);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  width: 100%;
+}
+
+h1 {
+  font-size: clamp(2.5rem, 8vw, 4rem);
+  font-weight: 800;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 1rem;
+  line-height: 1.1;
+}
+
+h2 {
+  font-size: clamp(1.8rem, 5vw, 2.5rem);
+  font-weight: 800;
+  margin-bottom: 1rem;
+}
+
+h3 {
+  font-size: clamp(1.4rem, 3vw, 1.8rem);
+  font-weight: 700;
+}
+
+p {
+  color: var(--text-secondary);
+  font-size: clamp(1rem, 2vw, 1.1rem);
+  line-height: 1.6;
+}
+
+/* Responsive Utilities */
+.section-padding {
+  padding-top: clamp(60px, 10vw, 120px);
+  padding-bottom: clamp(60px, 10vw, 120px);
+}
+
+.grid-responsive {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: clamp(20px, 4vw, 40px);
+}
+
+/* Animations */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.fixed { position: fixed; }
+.top-0 { top: 0; }
+.left-0 { left: 0; }
+.right-0 { right: 0; }
+.z-50 { z-index: 50; }
+.transition-all { transition: all 0.3s ease; }
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+input:focus {
+  border-color: var(--accent-color) !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 20px;
+  }
+  
+  .glass {
+    padding: 30px 20px !important;
+    border-radius: 20px;
+  }
+
+  header#top {
+    padding-top: 100px !important;
+    margin-bottom: 50px !important;
+  }
+
+  .btn-primary, .btn-secondary {
+    padding: 10px 20px;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 15px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .desktop-connector {
+    display: block !important;
+  }
+}

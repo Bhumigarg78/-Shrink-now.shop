@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Mail, Calendar, Settings, LogOut, Loader2, ShieldCheck, FileText, Image as ImageIcon, Video as VideoIcon, History } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { getCompressionHistory } from '../utils/api';
+import { getCompressionHistory, API_URL } from '../utils/api';
 
 const Profile: React.FC = () => {
   const [user, setUser] = useState<any>(null);
@@ -19,7 +19,7 @@ const Profile: React.FC = () => {
       }
       try {
         // Fetch User Profile
-        const profileRes = await fetch('http://localhost:5000/api/auth/profile', {
+        const profileRes = await fetch(`${API_URL}/auth/profile`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const profileData = await profileRes.json();

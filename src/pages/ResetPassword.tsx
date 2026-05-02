@@ -4,6 +4,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { Lock, Loader2, ArrowRight, ChevronLeft, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { API_URL } from '../utils/api';
 
 const ResetPassword: React.FC = () => {
   const { token } = useParams();
@@ -21,7 +22,7 @@ const ResetPassword: React.FC = () => {
     }
     setLoading(true);
     try {
-      const res = await axios.post(`http://localhost:5000/api/auth/reset-password/${token}`, { password });
+      const res = await axios.post(`${API_URL}/auth/reset-password/${token}`, { password });
       toast.success(res.data.message);
       setSuccess(true);
       setTimeout(() => navigate('/login'), 3000);

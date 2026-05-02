@@ -4,6 +4,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { UserPlus, Mail, Lock, User, Loader2, ArrowRight, ChevronLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { API_URL } from '../utils/api';
 
 const Signup: React.FC = () => {
   const [name, setName] = useState('');
@@ -16,7 +17,7 @@ const Signup: React.FC = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/signup', { name, email, password });
+      const res = await axios.post(`${API_URL}/auth/signup`, { name, email, password });
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('user', JSON.stringify(res.data.user));
       toast.success('Account created successfully!');

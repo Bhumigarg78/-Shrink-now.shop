@@ -4,6 +4,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { LogIn, Mail, Lock, Loader2, ArrowRight, ChevronLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { API_URL } from '../utils/api';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -15,7 +16,7 @@ const Login: React.FC = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', { email, password });
+      const res = await axios.post(`${API_URL}/auth/login`, { email, password });
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('user', JSON.stringify(res.data.user));
       toast.success('Login Successful!');
@@ -35,7 +36,7 @@ const Login: React.FC = () => {
     }
     setLoading(true);
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/forgot-password', { email });
+      const res = await axios.post(`${API_URL}/auth/forgot-password`, { email });
       toast.success(res.data.message);
     } catch (err: any) {
       toast.error(err.response?.data?.message || 'Something went wrong');

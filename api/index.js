@@ -34,16 +34,23 @@ const Compression = mongoose.models.Compression || mongoose.model('Compression',
 // ─── Config ───────────────────────────────────────────────────────────────────
 
 const JWT_SECRET = process.env.JWT_SECRET || 'shrink_now_secret_2026_secure_key';
-const MONGO_URI = process.env.MONGO_URI || '';
+// Support both MONGO_URI and MONGODB_URI
+const MONGO_URI = process.env.MONGODB_URI || process.env.MONGO_URI || '';
 
 // ─── App Setup ────────────────────────────────────────────────────────────────
 
 const app = express();
 app.use(express.json());
 app.use(cors({
-  origin: true, // Allow all origins (can restrict later)
+  origin: true,
   credentials: true
 }));
+
+// Request Logging
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  next();
+});
 
 // ─── Database Connection (Serverless cached) ──────────────────────────────────
 
@@ -77,13 +84,11 @@ app.use(async (req, res, next) => {
   next();
 });
 
-// ─── Demo Fallback ────────────────────────────────────────────────────────────
-
-const demoUsers = [];
+// ─── Demo Fallback (Disabled for Serverless) ───────────────────────────────────
 
 async function findUser(email) {
   if (isConnected) return await User.findOne({ email });
-  return demoUsers.find(u => u.email === email) || null;
+  throw new Error("Database not connected. Please configure MONGO_URI in Vercel environment variables.");
 }
 
 async function saveUser(userData) {
@@ -91,14 +96,12 @@ async function saveUser(userData) {
     const user = new User(userData);
     return await user.save();
   }
-  const newUser = { ...userData, _id: Date.now().toString(), createdAt: new Date() };
-  demoUsers.push(newUser);
-  return newUser;
+  throw new Error("Database not connected. Please configure MONGO_URI in Vercel environment variables.");
 }
 
 async function findUserById(id) {
   if (isConnected) return await User.findById(id).select('-password');
-  return demoUsers.find(u => u._id === id) || null;
+  throw new Error("Database not connected. Please configure MONGO_URI in Vercel environment variables.");
 }
 
 // ─── Auth Middleware ──────────────────────────────────────────────────────────
@@ -150,11 +153,24 @@ app.post('/api/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) return res.status(400).json({ message: 'Email and password required' });
+    
+    console.log(`Login attempt for: ${email}`);
     const user = await findUser(email);
-    if (!user) return res.status(400).json({ message: 'Invalid credentials' });
+    
+    if (!user) {
+      console.log(`User not found: ${email}`);
+      const hint = !isConnected ? ' (Server in Demo Mode - DB Not Connected)' : '';
+      return res.status(400).json({ message: 'Invalid credentials' + hint });
+    }
+    
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
+    if (!isMatch) {
+      console.log(`Password mismatch for: ${email}`);
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+    
     const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '7d' });
+    console.log(`Login successful: ${email}`);
     res.json({ token, user: { id: user._id, name: user.name, email: user.email } });
   } catch (err) {
     console.error('Login error:', err);
@@ -254,6 +270,14 @@ app.get('/api/compression/history', auth, async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: 'Server error' });
   }
+});
+
+// Catch-all for API debugging
+app.use('/api/*', (req, res) => {
+  res.status(404).json({ 
+    message: `API Route not found: ${req.originalUrl}`,
+    hint: 'Check if the route is defined in api/index.js'
+  });
 });
 
 // ─── Export for Vercel ────────────────────────────────────────────────────────

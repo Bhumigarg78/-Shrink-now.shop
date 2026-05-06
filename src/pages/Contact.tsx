@@ -1,10 +1,15 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import SEO from '../components/SEO';
 import { Mail, Phone, MapPin, Send, MessageSquare, Globe } from 'lucide-react';
 
 const Contact: React.FC = () => {
   return (
     <div className="container section-padding">
+      <SEO 
+        title="Contact Us" 
+        description="Have questions or feedback? Get in touch with the Shrink-Now.shop team for support and inquiries."
+      />
       <motion.div 
         initial={{ opacity: 0, y: 20 }} 
         animate={{ opacity: 1, y: 0 }} 

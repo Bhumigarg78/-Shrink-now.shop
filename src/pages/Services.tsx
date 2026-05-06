@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import SEO from '../components/SEO';
 import { Image as ImageIcon, Video as VideoIcon, FileText, Settings, Shield, Hash } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
@@ -84,6 +85,10 @@ const Services: React.FC<ServicesProps> = ({ onSelectService }) => {
 
   return (
     <div className="container section-padding">
+      <SEO 
+        title="Our Services" 
+        description="Explore our range of media optimization services: Image Compression, Video Reduction, and PDF Optimization."
+      />
       <motion.div 
         initial={{ opacity: 0, y: 20 }} 
         animate={{ opacity: 1, y: 0 }} 

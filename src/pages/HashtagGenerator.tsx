@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Copy, Check, Sparkles, RefreshCw, Smartphone, Globe, Layers } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import SEO from '../components/SEO';
 
 const HashtagGenerator: React.FC = () => {
   const [topic, setTopic] = useState('');
@@ -84,6 +85,10 @@ const HashtagGenerator: React.FC = () => {
 
   return (
     <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+      <SEO 
+        title="AI Hashtag Generator" 
+        description="Generate viral hashtags for Instagram, TikTok, and Twitter instantly with our AI-powered hashtag generator."
+      />
       <motion.div 
         initial={{ opacity: 0, y: 20 }} 
         animate={{ opacity: 1, y: 0 }} 

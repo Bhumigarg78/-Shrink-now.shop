@@ -5,6 +5,7 @@ import { toast } from 'react-hot-toast';
 import { UserPlus, Mail, Lock, User, Loader2, ArrowRight, ChevronLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { API_URL } from '../utils/api';
+import SEO from '../components/SEO';
 
 const Signup: React.FC = () => {
   const [name, setName] = useState('');
@@ -32,6 +33,10 @@ const Signup: React.FC = () => {
 
   return (
     <div className="container" style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', padding: '40px 20px', overflow: 'hidden' }}>
+      <SEO 
+        title="Sign Up" 
+        description="Create an account on Shrink-Now.shop to save your compression history and access advanced AI features."
+      />
       {/* Background Decorative Elements */}
       <div style={{ position: 'absolute', top: '15%', right: '5%', width: '350px', height: '350px', background: 'var(--secondary-gradient)', filter: 'blur(130px)', opacity: 0.15, borderRadius: '50%', zIndex: 0 }}></div>
       <div style={{ position: 'absolute', bottom: '15%', left: '5%', width: '300px', height: '300px', background: 'var(--primary-gradient)', filter: 'blur(120px)', opacity: 0.15, borderRadius: '50%', zIndex: 0 }}></div>

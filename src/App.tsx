@@ -13,6 +13,7 @@ import VideoCompressor from './components/VideoCompressor';
 import PdfCompressor from './components/PdfCompressor';
 import CustomCursor from './components/CustomCursor';
 import AdSense from './components/AdSense';
+import SEO from './components/SEO';
 
 // Pages
 import Login from './pages/Login';
@@ -52,6 +53,10 @@ const Home = () => {
 
   return (
     <div className="container" style={{ paddingBottom: '60px', position: 'relative', overflow: 'hidden' }}>
+      <SEO 
+        title="High Performance File Compression" 
+        description="The ultimate online tool for compressing images, videos, and PDFs. Shrink files fast with zero quality loss."
+      />
       {/* 3D Background Orbs */}
       <div style={{ position: 'absolute', top: '5%', left: '10%', width: '150px', height: '150px', background: 'radial-gradient(circle at 30% 30%, rgba(59, 130, 246, 0.4), rgba(59, 130, 246, 0.1))', filter: 'blur(20px)', borderRadius: '50%', zIndex: -1, boxShadow: 'inset -20px -20px 50px rgba(0,0,0,0.2), 20px 20px 60px rgba(0,0,0,0.1)' }} className="float-3d"></div>
       <div style={{ position: 'absolute', top: '25%', right: '15%', width: '200px', height: '200px', background: 'radial-gradient(circle at 30% 30%, rgba(139, 92, 246, 0.3), rgba(139, 92, 246, 0.1))', filter: 'blur(30px)', borderRadius: '50%', zIndex: -1, boxShadow: 'inset -20px -20px 50px rgba(0,0,0,0.2), 20px 20px 60px rgba(0,0,0,0.1)' }} className="float-3d"></div>

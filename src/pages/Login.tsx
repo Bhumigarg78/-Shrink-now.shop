@@ -5,6 +5,7 @@ import { toast } from 'react-hot-toast';
 import { LogIn, Mail, Lock, Loader2, ArrowRight, ChevronLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { API_URL } from '../utils/api';
+import SEO from '../components/SEO';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -48,6 +49,10 @@ const Login: React.FC = () => {
 
   return (
     <div className="container" style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', padding: '40px 20px', overflow: 'hidden' }}>
+      <SEO 
+        title="Login" 
+        description="Login to your Shrink-Now.shop account to manage your files and access premium compression features."
+      />
       {/* Background Decorative Elements */}
       <div style={{ position: 'absolute', top: '10%', left: '5%', width: '300px', height: '300px', background: 'var(--primary-gradient)', filter: 'blur(120px)', opacity: 0.15, borderRadius: '50%', zIndex: 0 }}></div>
       <div style={{ position: 'absolute', bottom: '10%', right: '5%', width: '400px', height: '400px', background: 'var(--secondary-gradient)', filter: 'blur(150px)', opacity: 0.15, borderRadius: '50%', zIndex: 0 }}></div>

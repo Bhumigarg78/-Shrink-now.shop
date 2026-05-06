@@ -1,10 +1,15 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import SEO from '../components/SEO';
 import { Target, Users, Zap, Shield, Award, BarChart } from 'lucide-react';
 
 const About: React.FC = () => {
   return (
     <div className="container section-padding">
+      <SEO 
+        title="About Us" 
+        description="Learn more about Shrink-Now.shop, the fastest AI-powered file compression platform for all your media needs."
+      />
       <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
         {/* Hero Section */}
         <motion.div 

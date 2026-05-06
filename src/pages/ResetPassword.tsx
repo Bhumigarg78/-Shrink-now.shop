@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import { Lock, Loader2, ArrowRight, ChevronLeft, CheckCircle } from 'lucide-react';
+import { Lock, Loader2, ChevronLeft, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { API_URL } from '../utils/api';
 

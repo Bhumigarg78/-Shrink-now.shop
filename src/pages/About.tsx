@@ -11,7 +11,19 @@ const About: React.FC = () => {
           initial={{ opacity: 0, y: 20 }} 
           animate={{ opacity: 1, y: 0 }} 
           transition={{ duration: 0.6 }}
-          style={{ textAlign: 'center', marginBottom: 'clamp(60px, 10vw, 100px)' }}
+          style={{ textAlign: 'left', marginBottom: '40px' }}
+        >
+          <a href="/" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.9rem', padding: '8px 16px', borderRadius: '12px', background: 'var(--surface-color)', border: '1px solid var(--glass-border)' }}>
+            &larr; Back to Home
+          </a>
+        </motion.div>
+
+        {/* Hero Section */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ duration: 0.6, delay: 0.1 }}
+          style={{ textAlign: 'center', marginBottom: 'clamp(40px, 6vw, 60px)' }}
         >
           <div style={{ display: 'inline-block', padding: '10px 20px', borderRadius: '40px', background: 'rgba(59, 130, 246, 0.1)', color: 'var(--accent-color)', fontWeight: 'bold', marginBottom: '25px', fontSize: '0.9rem' }}>
             Our Story
@@ -23,7 +35,7 @@ const About: React.FC = () => {
         </motion.div>
 
         {/* Stats Section */}
-        <div className="grid-responsive" style={{ marginBottom: 'clamp(60px, 10vw, 100px)' }}>
+        <div className="grid-responsive" style={{ marginBottom: 'clamp(40px, 6vw, 60px)' }}>
           {[
             { label: 'Files Compressed', value: '10M+' },
             { label: 'Storage Saved', value: '500TB' },
@@ -45,7 +57,7 @@ const About: React.FC = () => {
         </div>
 
         {/* Vision & Mission */}
-        <div className="grid-responsive" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 400px), 1fr))', marginBottom: 'clamp(60px, 10vw, 100px)' }}>
+        <div className="grid-responsive" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 400px), 1fr))', marginBottom: 'clamp(40px, 6vw, 60px)' }}>
           <motion.div 
             whileHover={{ translateY: -5 }}
             className="glass" 
@@ -72,7 +84,7 @@ const About: React.FC = () => {
 
         {/* Values Section */}
         <div style={{ textAlign: 'center' }}>
-          <h2 style={{ marginBottom: '60px' }}>Our Core Values</h2>
+          <h2 style={{ marginBottom: '40px' }}>Our Core Values</h2>
           <div className="grid-responsive" style={{ textAlign: 'left' }}>
             {[
               { icon: <Zap />, title: 'Performance', desc: 'We obsess over speed and efficiency in everything we build.' },

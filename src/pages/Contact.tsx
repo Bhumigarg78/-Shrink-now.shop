@@ -6,10 +6,21 @@ const Contact: React.FC = () => {
   return (
     <div className="container section-padding">
       <motion.div 
+        initial={{ opacity: 0, y: 20 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        transition={{ duration: 0.6 }}
+        style={{ textAlign: 'left', marginBottom: '40px' }}
+      >
+        <a href="/" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.9rem', padding: '8px 16px', borderRadius: '12px', background: 'var(--surface-color)', border: '1px solid var(--glass-border)' }}>
+          &larr; Back to Home
+        </a>
+      </motion.div>
+
+      <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        style={{ textAlign: 'center', marginBottom: '60px' }}
+        transition={{ duration: 0.6, delay: 0.1 }}
+        style={{ textAlign: 'center', marginBottom: '40px' }}
       >
         <h1>Get in Touch</h1>
         <p style={{ maxWidth: '700px', margin: '0 auto' }}>
@@ -52,7 +63,7 @@ const Contact: React.FC = () => {
                 </div>
                 <div>
                   <p style={{ fontSize: '0.8rem', marginBottom: '2px' }}>Visit Us</p>
-                  <p style={{ color: 'var(--text-primary)', fontWeight: '600' }}>San Francisco, CA</p>
+                  <p style={{ fontSize: '1.5rem', marginBottom: '5px', padding: '5px 10px', background: 'var(--surface-color)', border: '1px solid var(--accent-color)', color: 'var(--text-primary)', borderRadius: '8px', width: '100%' }}>San Francisco, CA</p>
                 </div>
               </div>
             </div>
@@ -96,55 +107,55 @@ const Contact: React.FC = () => {
           style={{ padding: '40px' }}
         >
           <h2 style={{ marginBottom: '30px' }}>Send us a message</h2>
-          <form style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <form action="https://formspree.io/f/xvzlqpde" method="POST" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             <div className="grid-responsive" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <label style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Full Name</label>
-                <input type="text" placeholder="John Doe" style={{ 
+                <input type="text" name="name" placeholder="John Doe" required style={{ 
                   background: 'rgba(255,255,255,0.05)', 
                   border: '1px solid var(--glass-border)', 
                   borderRadius: '12px', 
                   padding: '12px 16px', 
-                  color: 'white',
+                  color: 'var(--text-primary)',
                   outline: 'none'
                 }} />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <label style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Email Address</label>
-                <input type="email" placeholder="john@example.com" style={{ 
-                  background: 'rgba(255,255,255,0.05)', 
+                <input type="email" name="email" placeholder="john@example.com" required style={{ 
+                  background: 'var(--surface-color)', 
                   border: '1px solid var(--glass-border)', 
                   borderRadius: '12px', 
                   padding: '12px 16px', 
-                  color: 'white',
+                  color: 'var(--text-primary)',
                   outline: 'none'
                 }} />
               </div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <label style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Subject</label>
-              <input type="text" placeholder="How can we help?" style={{ 
-                background: 'rgba(255,255,255,0.05)', 
+              <input type="text" name="subject" placeholder="How can we help?" style={{ 
+                background: 'var(--surface-color)', 
                 border: '1px solid var(--glass-border)', 
                 borderRadius: '12px', 
                 padding: '12px 16px', 
-                color: 'white',
+                color: 'var(--text-primary)',
                 outline: 'none'
               }} />
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <label style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Message</label>
-              <textarea rows={5} placeholder="Write your message here..." style={{ 
-                background: 'rgba(255,255,255,0.05)', 
+              <textarea name="message" rows={5} placeholder="Write your message here..." required style={{ 
+                background: 'var(--surface-color)', 
                 border: '1px solid var(--glass-border)', 
                 borderRadius: '12px', 
                 padding: '12px 16px', 
-                color: 'white',
+                color: 'var(--text-primary)',
                 outline: 'none',
                 resize: 'none'
               }}></textarea>
             </div>
-            <button className="btn-primary" style={{ marginTop: '10px', justifyContent: 'center' }}>
+            <button type="submit" className="btn-primary" style={{ marginTop: '10px', justifyContent: 'center' }}>
               <Send size={18} /> Send Message
             </button>
           </form>

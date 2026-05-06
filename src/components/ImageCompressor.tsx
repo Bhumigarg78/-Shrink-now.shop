@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import imageCompression from 'browser-image-compression';
+
 import { Download, Loader2 } from 'lucide-react';
 import { saveCompressionRecord } from '../utils/api';
 import { motion } from 'framer-motion';
@@ -18,27 +18,9 @@ const ImageCompressor: React.FC<ImageCompressorProps> = ({ file, onReset }) => {
   const [compressing, setCompressing] = useState(false);
   const [progressMsg, setProgressMsg] = useState('');
   const [result, setResult] = useState<{ url: string; size: number; name: string } | null>(null);
-  const [preset, setPreset] = useState<string>('custom');
 
-  const applyPreset = (p: string) => {
-    setPreset(p);
-    if (p === 'ig-post') {
-      setMaxWidth(1080);
-      setTargetSize(500);
-      setUnit('KB');
-      setQuality(0.8);
-    } else if (p === 'ig-story') {
-      setMaxWidth(1080);
-      setTargetSize(800);
-      setUnit('KB');
-      setQuality(0.8);
-    } else if (p === 'high-quality') {
-      setMaxWidth(2560);
-      setTargetSize(Math.round(file.size / 1024 / 1.2));
-      setUnit('KB');
-      setQuality(0.95);
-    }
-  };
+
+
 
   const handleCompress = async () => {
     setCompressing(true);

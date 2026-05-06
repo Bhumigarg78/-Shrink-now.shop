@@ -17,7 +17,7 @@ const VideoCompressor: React.FC<VideoCompressorProps> = ({ file, onReset }) => {
   const [progress, setProgress] = useState(0);
   const [targetSize, setTargetSize] = useState(Math.round(file.size / 1024 / 2));
   const [unit, setUnit] = useState<'KB' | 'MB'>(file.size > 1024 * 1024 ? 'MB' : 'KB');
-  const [quality, setQuality] = useState<'low' | 'medium' | 'high'>('medium');
+
   const [result, setResult] = useState<{ url: string; size: number; name: string } | null>(null);
   const ffmpegRef = useRef(new FFmpeg());
   const [preset, setPreset] = useState<string>('custom');
@@ -45,15 +45,12 @@ const VideoCompressor: React.FC<VideoCompressorProps> = ({ file, onReset }) => {
     if (p === 'youtube') {
       setTargetSize(Math.round(file.size / 1024 / 1.2));
       setUnit('MB');
-      setQuality('high');
     } else if (p === 'ig-reel') {
       setTargetSize(Math.min(15, Math.round(file.size / 1024 / 4)));
       setUnit('MB');
-      setQuality('medium');
     } else if (p === 'whatsapp') {
       setTargetSize(16);
       setUnit('MB');
-      setQuality('low');
     }
   };
 
@@ -125,7 +122,7 @@ const VideoCompressor: React.FC<VideoCompressorProps> = ({ file, onReset }) => {
       setProgress(95);
 
       const data = await ffmpeg.readFile(outputFileName);
-      const blob = new Blob([data], { type: 'video/mp4' });
+      const blob = new Blob([data as any], { type: 'video/mp4' });
       const url = URL.createObjectURL(blob);
 
       // Clean up pass files

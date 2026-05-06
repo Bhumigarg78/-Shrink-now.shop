@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Mail, Calendar, Settings, LogOut, Loader2, ShieldCheck, FileText, Image as ImageIcon, Video as VideoIcon, History } from 'lucide-react';
+import { Mail, Calendar, Settings, LogOut, Loader2, ShieldCheck, FileText, Image as ImageIcon, Video as VideoIcon, History } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { getCompressionHistory, API_URL } from '../utils/api';
 
@@ -8,6 +8,9 @@ const Profile: React.FC = () => {
   const [user, setUser] = useState<any>(null);
   const [history, setHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editName, setEditName] = useState('');
+  const [saving, setSaving] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,6 +27,7 @@ const Profile: React.FC = () => {
         });
         const profileData = await profileRes.json();
         setUser(profileData);
+        setEditName(profileData.name);
 
         // Fetch History
         const historyData = await getCompressionHistory();
@@ -62,8 +66,49 @@ const Profile: React.FC = () => {
     </div>
   );
 
+  const handleSaveProfile = async () => {
+    setSaving(true);
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${API_URL}/auth/profile`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ name: editName })
+      });
+      if (res.ok) {
+        const updatedUser = await res.json();
+        setUser(updatedUser);
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        setIsEditing(false);
+        // You could add a toast.success('Profile updated') here if toast was imported
+      } else {
+        const data = await res.json();
+        alert(data.message || 'Failed to update profile');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error updating profile');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <div className="container section-padding">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        transition={{ duration: 0.6 }}
+        style={{ textAlign: 'left', marginBottom: '40px' }}
+      >
+        <a href="/" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.9rem', padding: '8px 16px', borderRadius: '12px', background: 'var(--surface-color)', border: '1px solid var(--glass-border)' }}>
+          &larr; Back to Home
+        </a>
+      </motion.div>
+
       <div style={{ maxWidth: '900px', margin: '0 auto' }}>
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -78,7 +123,16 @@ const Profile: React.FC = () => {
               {user?.name?.[0].toUpperCase()}
             </div>
             <div style={{ minWidth: '200px' }}>
-              <h1 style={{ fontSize: 'clamp(1.5rem, 5vw, 2rem)', marginBottom: '5px' }}>{user?.name}</h1>
+              {isEditing ? (
+                <input 
+                  type="text" 
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  style={{ fontSize: '1.5rem', marginBottom: '5px', padding: '5px 10px', background: 'var(--surface-color)', border: '1px solid var(--accent-color)', color: 'var(--text-primary)', borderRadius: '8px', width: '100%' }}
+                />
+              ) : (
+                <h1 style={{ fontSize: 'clamp(1.5rem, 5vw, 2rem)', marginBottom: '5px' }}>{user?.name}</h1>
+              )}
               <p style={{ color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.9rem' }}>
                 <ShieldCheck size={16} color="#10b981" /> Verified Professional
               </p>
@@ -101,7 +155,16 @@ const Profile: React.FC = () => {
           </div>
 
           <div style={{ marginTop: '40px', display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
-            <button className="btn-primary" style={{ flex: '1 1 auto' }}><Settings size={18} /> Edit Profile</button>
+            {isEditing ? (
+              <>
+                <button onClick={handleSaveProfile} disabled={saving} className="btn-primary" style={{ flex: '1 1 auto' }}>
+                  {saving ? <Loader2 size={18} className="animate-spin" /> : 'Save Changes'}
+                </button>
+                <button onClick={() => { setIsEditing(false); setEditName(user?.name); }} className="btn-secondary" style={{ flex: '1 1 auto' }}>Cancel</button>
+              </>
+            ) : (
+              <button onClick={() => setIsEditing(true)} className="btn-primary" style={{ flex: '1 1 auto' }}><Settings size={18} /> Edit Profile</button>
+            )}
             <button onClick={handleLogout} className="btn-secondary" style={{ color: '#ef4444', borderColor: '#ef4444', flex: '1 1 auto' }}><LogOut size={18} /> Logout</button>
           </div>
         </motion.div>

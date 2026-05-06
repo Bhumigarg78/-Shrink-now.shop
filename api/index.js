@@ -204,6 +204,21 @@ app.get('/api/auth/profile', auth, async (req, res) => {
   }
 });
 
+// Update Profile
+app.put('/api/auth/profile', auth, async (req, res) => {
+  try {
+    const { name } = req.body;
+    if (!name) return res.status(400).json({ message: 'Name is required' });
+    if (isConnected) {
+      await User.findByIdAndUpdate(req.user.id, { name });
+    }
+    const updatedUser = await findUserById(req.user.id);
+    res.json(updatedUser);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // Forgot Password
 app.post('/api/auth/forgot-password', async (req, res) => {
   try {
@@ -219,7 +234,7 @@ app.post('/api/auth/forgot-password', async (req, res) => {
       });
     }
     console.log(`Reset URL: ${frontendUrl}/reset-password/${token}`);
-    res.json({ message: 'Password reset link sent!' });
+    res.json({ message: `Test Mode: Go to ${frontendUrl}/reset-password/${token} to reset` });
   } catch (err) {
     res.status(500).json({ message: 'Server error' });
   }
@@ -236,9 +251,8 @@ app.post('/api/auth/reset-password/:token', async (req, res) => {
     if (!user) return res.status(400).json({ message: 'Token invalid or expired' });
     const hashedPassword = await bcrypt.hash(password, 10);
     await User.findByIdAndUpdate(user._id, {
-      password: hashedPassword,
-      resetPasswordToken: undefined,
-      resetPasswordExpires: undefined
+      $set: { password: hashedPassword },
+      $unset: { resetPasswordToken: 1, resetPasswordExpires: 1 }
     });
     res.json({ message: 'Password reset successfully!' });
   } catch (err) {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Image as ImageIcon, Video as VideoIcon, FileText, Settings, Shield, Zap, Hash } from 'lucide-react';
+import { Image as ImageIcon, Video as VideoIcon, FileText, Settings, Shield, Hash } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 
@@ -27,7 +27,12 @@ const Services: React.FC<ServicesProps> = ({ onSelectService }) => {
 
     if (onSelectService && (type === 'image' || type === 'video' || type === 'pdf')) {
       onSelectService(type);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const topElement = document.getElementById('top');
+      if (topElement) {
+        topElement.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     }
   };
 
@@ -74,22 +79,27 @@ const Services: React.FC<ServicesProps> = ({ onSelectService }) => {
       icon: <Shield size={32} />,
       color: "#f59e0b"
     },
-    {
-      id: 'api',
-      title: "Cloud API",
-      description: "Integrate our compression engine into your own applications with our powerful and easy-to-use API.",
-      icon: <Zap size={32} />,
-      color: "#ef4444"
-    }
+
   ];
 
   return (
     <div className="container section-padding">
       <motion.div 
+        initial={{ opacity: 0, y: 20 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        transition={{ duration: 0.6 }}
+        style={{ textAlign: 'left', marginBottom: '40px' }}
+      >
+        <a href="/" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.9rem', padding: '8px 16px', borderRadius: '12px', background: 'var(--surface-color)', border: '1px solid var(--glass-border)' }}>
+          &larr; Back to Home
+        </a>
+      </motion.div>
+
+      <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        style={{ textAlign: 'center', marginBottom: 'clamp(40px, 8vw, 80px)' }}
+        transition={{ duration: 0.6, delay: 0.1 }}
+        style={{ textAlign: 'center', marginBottom: 'clamp(30px, 5vw, 50px)' }}
       >
         <h1>Our Services</h1>
         <p style={{ maxWidth: '700px', margin: '0 auto' }}>

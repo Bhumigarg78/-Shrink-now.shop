@@ -53,7 +53,7 @@ const PdfCompressor: React.FC<PdfCompressorProps> = ({ file, onReset }) => {
         addDefaultPage: false
       });
       
-      const blob = new Blob([compressedPdfBytes], { type: 'application/pdf' });
+      const blob = new Blob([compressedPdfBytes as any], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
       
       setResult({

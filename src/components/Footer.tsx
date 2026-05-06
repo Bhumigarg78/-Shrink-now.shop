@@ -4,7 +4,7 @@ import { Layers, Globe, Mail, Heart } from 'lucide-react';
 
 const Footer: React.FC = () => {
   return (
-    <footer style={{ background: 'var(--surface-color)', borderTop: '1px solid var(--glass-border)', paddingTop: 'clamp(40px, 8vw, 80px)', paddingBottom: '40px', marginTop: 'clamp(60px, 10vw, 100px)' }}>
+    <footer style={{ background: 'var(--surface-color)', borderTop: '1px solid var(--glass-border)', paddingTop: 'clamp(30px, 6vw, 60px)', paddingBottom: '40px', marginTop: 'clamp(40px, 7vw, 70px)' }}>
       <div className="container">
         <div className="grid-responsive" style={{ marginBottom: '60px' }}>
           <div style={{ gridColumn: 'span 1', maxWidth: '400px' }}>

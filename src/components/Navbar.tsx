@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Layers, User, LogIn, UserPlus, LogOut, Menu, X, Sun, Moon } from 'lucide-react';
+import { Layers, User, LogIn, UserPlus, LogOut, Menu, X, Sun, Moon, Shield } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Navbar: React.FC = () => {
@@ -8,8 +8,9 @@ const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = React.useState(false);
   const navigate = useNavigate();
   
-  // Mock auth state - will be replaced with real auth later
-  const [isLoggedIn, setIsLoggedIn] = React.useState(localStorage.getItem('token') !== null);
+  // Real auth state
+  const [user, setUser] = React.useState<any>(JSON.parse(localStorage.getItem('user') || 'null'));
+  const isLoggedIn = !!localStorage.getItem('token');
 
   const [theme, setTheme] = React.useState(localStorage.getItem('theme') || 'dark');
 
@@ -33,7 +34,7 @@ const Navbar: React.FC = () => {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    setIsLoggedIn(false);
+    setUser(null);
     navigate('/login');
   };
 
@@ -61,13 +62,13 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'glass py-3' : 'py-6'}`}>
+    <nav className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 navbar-glass" style={{ padding: isScrolled ? '12px 0' : '20px 0', boxShadow: isScrolled ? '0 10px 30px rgba(0,0,0,0.1)' : '0 4px 20px rgba(0,0,0,0.05)' }}>
       <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none', color: 'inherit' }}>
           <div style={{ background: 'var(--primary-gradient)', padding: '8px', borderRadius: '12px' }}>
             <Layers size={24} color="white" />
           </div>
-          <span style={{ fontSize: '1.5rem', fontWeight: '800', letterSpacing: '-0.5px' }}>Shrink-Now<span style={{ color: 'var(--accent-color)' }}>.shop</span></span>
+          <span style={{ fontSize: '1.6rem', fontWeight: '800', letterSpacing: '-0.5px' }}>Shrink-Now<span style={{ color: 'var(--accent-color)' }}>.shop</span></span>
         </Link>
 
         {/* Desktop Menu */}
@@ -80,7 +81,7 @@ const Navbar: React.FC = () => {
                   to={link.path} 
                   onClick={() => setIsOpen(false)}
                   className="nav-link" 
-                  style={{ textDecoration: 'none', color: 'var(--text-secondary)', fontWeight: '500', transition: 'color 0.3s', cursor: 'pointer' }}
+                  style={{ textDecoration: 'none', color: 'var(--text-secondary)', fontWeight: '500', fontSize: '1.05rem', transition: 'color 0.3s', cursor: 'pointer' }}
                 >
                   {link.name}
                 </Link>
@@ -90,7 +91,7 @@ const Navbar: React.FC = () => {
                   href={`#${link.path}`}
                   onClick={(e) => handleNavClick(e, link.path, link.type)} 
                   className="nav-link" 
-                  style={{ textDecoration: 'none', color: 'var(--text-secondary)', fontWeight: '500', transition: 'color 0.3s', cursor: 'pointer' }}
+                  style={{ textDecoration: 'none', color: 'var(--text-secondary)', fontWeight: '500', fontSize: '1.05rem', transition: 'color 0.3s', cursor: 'pointer' }}
                 >
                   {link.name}
                 </a>
@@ -108,7 +109,12 @@ const Navbar: React.FC = () => {
             </button>
             {isLoggedIn ? (
               <>
-                <Link to="/profile" className="btn-secondary" style={{ padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                {(user?.role === 'admin' || user?.email?.toLowerCase().trim() === 'bhumigarg704@gmail.com') && (
+                  <Link to="/admin" className="btn-secondary" style={{ padding: '8px 20px', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid var(--accent-color)', color: 'var(--accent-color)' }}>
+                    <Shield size={18} /> Admin
+                  </Link>
+                )}
+                <Link to="/profile" className="btn-secondary" style={{ padding: '8px 20px', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <User size={18} /> Profile
                 </Link>
                 <button onClick={handleLogout} className="btn-secondary" style={{ padding: '8px 16px', border: '1px solid #ef4444', color: '#ef4444' }}>
@@ -117,10 +123,10 @@ const Navbar: React.FC = () => {
               </>
             ) : (
               <>
-                <Link to="/login" className="btn-secondary" style={{ padding: '8px 20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Link to="/login" className="btn-secondary" style={{ padding: '8px 24px', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <LogIn size={18} /> Login
                 </Link>
-                <Link to="/signup" className="btn-primary" style={{ padding: '8px 20px' }}>
+                <Link to="/signup" className="btn-primary" style={{ padding: '8px 28px', fontSize: '1rem' }}>
                   <UserPlus size={18} /> Sign Up
                 </Link>
               </>
@@ -129,7 +135,7 @@ const Navbar: React.FC = () => {
         </div>
 
         {/* Mobile Toggle */}
-        <button className="mobile-toggle" onClick={() => setIsOpen(!isOpen)} style={{ display: 'none', background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}>
+        <button className="mobile-toggle" onClick={() => setIsOpen(!isOpen)} style={{ display: 'none', background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer' }}>
           {isOpen ? <X size={28} /> : <Menu size={28} />}
         </button>
       </div>
@@ -195,6 +201,7 @@ const Navbar: React.FC = () => {
               </button>
               {isLoggedIn ? (
                 <>
+                  {(user?.role === 'admin' || user?.email?.toLowerCase().trim() === 'bhumigarg704@gmail.com') && <Link to="/admin" onClick={() => setIsOpen(false)} className="btn-secondary" style={{ textAlign: 'center', color: 'var(--accent-color)', borderColor: 'var(--accent-color)' }}>Admin Panel</Link>}
                   <Link to="/profile" onClick={() => setIsOpen(false)} className="btn-secondary" style={{ textAlign: 'center' }}>Profile</Link>
                   <button onClick={() => { handleLogout(); setIsOpen(false); }} className="btn-secondary" style={{ color: '#ef4444', borderColor: '#ef4444' }}>Logout</button>
                 </>

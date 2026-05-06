@@ -1,0 +1,3 @@
+# Replace the line below with the one provided in your AdSense dashboard
+# It should look like: google.com, pub-xxxxxxxxxxxxxxxx, DIRECT, f08c47fec0942fa0
+google.com, pub-9142489111131355, DIRECT, f08c47fec0942fa0

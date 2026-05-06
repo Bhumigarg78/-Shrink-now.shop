@@ -85,6 +85,17 @@ const HashtagGenerator: React.FC = () => {
   return (
     <div style={{ maxWidth: '900px', margin: '0 auto' }}>
       <motion.div 
+        initial={{ opacity: 0, y: 20 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        transition={{ duration: 0.6 }}
+        style={{ textAlign: 'left', marginBottom: '30px' }}
+      >
+        <a href="/" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.9rem', padding: '8px 16px', borderRadius: '12px', background: 'var(--surface-color)', border: '1px solid var(--glass-border)' }}>
+          &larr; Back to Home
+        </a>
+      </motion.div>
+
+      <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="glass" 
@@ -101,7 +112,7 @@ const HashtagGenerator: React.FC = () => {
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && generateHashtags()}
-              style={{ width: '100%', padding: '12px 15px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', borderRadius: '12px', color: 'white', outline: 'none' }}
+              style={{ width: '100%', padding: '12px 15px', background: 'var(--surface-color)', border: '1px solid var(--glass-border)', borderRadius: '12px', color: 'var(--text-primary)', outline: 'none' }}
             />
           </div>
 
@@ -112,7 +123,7 @@ const HashtagGenerator: React.FC = () => {
             <select 
               value={platform}
               onChange={(e) => setPlatform(e.target.value)}
-              style={{ width: '100%', padding: '12px 15px', background: 'rgba(20,20,40,0.9)', border: '1px solid var(--glass-border)', borderRadius: '12px', color: 'white', outline: 'none' }}
+              style={{ width: '100%', padding: '12px 15px', background: 'var(--surface-color)', border: '1px solid var(--glass-border)', borderRadius: '12px', color: 'var(--text-primary)', outline: 'none' }}
             >
               <option value="instagram">Instagram</option>
               <option value="tiktok">TikTok</option>
@@ -128,7 +139,7 @@ const HashtagGenerator: React.FC = () => {
             <select 
               value={quantity}
               onChange={(e) => setQuantity(parseInt(e.target.value))}
-              style={{ width: '100%', padding: '12px 15px', background: 'rgba(20,20,40,0.9)', border: '1px solid var(--glass-border)', borderRadius: '12px', color: 'white', outline: 'none' }}
+              style={{ width: '100%', padding: '12px 15px', background: 'var(--surface-color)', border: '1px solid var(--glass-border)', borderRadius: '12px', color: 'var(--text-primary)', outline: 'none' }}
             >
               <option value="10">Few (10)</option>
               <option value="20">Medium (20)</option>

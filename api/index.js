@@ -1,16 +1,17 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 
-// ─── Mongoose Models ──────────────────────────────────────────────────────────
+// ─── Models (Embedded for Vercel) ─────────────────────────────────────────────
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  role: { type: String, enum: ['user', 'admin'], default: 'user' },
   googleId: { type: String },
   picture: { type: String },
   resetPasswordToken: { type: String },
@@ -33,152 +34,153 @@ const Compression = mongoose.models.Compression || mongoose.model('Compression',
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
-const JWT_SECRET = process.env.JWT_SECRET || 'shrink_now_secret_2026_secure_key';
-// Support both MONGO_URI and MONGODB_URI
-const MONGO_URI = process.env.MONGODB_URI || process.env.MONGO_URI || '';
-
-// ─── App Setup ────────────────────────────────────────────────────────────────
-
 const app = express();
 app.use(express.json());
-app.use(cors({
-  origin: true,
-  credentials: true
-}));
 
-// Request Logging
+const JWT_SECRET = process.env.JWT_SECRET || 'shrink_now_secret_2026_secure_key';
+const MONGO_URI = process.env.MONGODB_URI || process.env.MONGO_URI || '';
+
+// Manual CORS Middleware
+app.use((req, res, next) => {
+  const origin = req.headers.origin || '*';
+  res.header('Access-Control-Allow-Origin', origin);
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  if (req.method === 'OPTIONS') return res.sendStatus(200);
+  next();
+});
+
+// Logging
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
   next();
 });
 
-// ─── Database Connection (Serverless cached) ──────────────────────────────────
+// ─── Global Settings ──────────────────────────────────────────────────────────
+
+let appSettings = {
+  maintenanceMode: false,
+  registrationEnabled: true
+};
+
+// ─── Database Connection ──────────────────────────────────────────────────────
 
 let isConnected = false;
-
 async function connectDB() {
-  if (isConnected && mongoose.connection.readyState === 1) return true;
-  if (!MONGO_URI) {
-    console.log('No MONGO_URI set, running in demo mode');
-    return false;
-  }
+  if (isConnected && mongoose.connection.readyState === 1) return;
+  if (!MONGO_URI) return;
   try {
-    mongoose.set('bufferCommands', false);
-    await mongoose.connect(MONGO_URI, {
-      serverSelectionTimeoutMS: 8000,
-      connectTimeoutMS: 8000,
-    });
+    await mongoose.connect(MONGO_URI);
     isConnected = true;
-    console.log('MongoDB connected');
-    return true;
   } catch (err) {
-    console.error('MongoDB connection error:', err.message);
-    isConnected = false;
-    return false;
+    console.error('DB Error:', err.message);
   }
 }
 
-// Connect DB on every request
 app.use(async (req, res, next) => {
   await connectDB();
   next();
 });
 
-// ─── Demo Fallback (Disabled for Serverless) ───────────────────────────────────
+// Maintenance Middleware
+app.use((req, res, next) => {
+  if (appSettings.maintenanceMode) {
+    if (!req.path.startsWith('/api/admin') && req.path !== '/api/auth/login' && req.path !== '/api/auth/profile') {
+      return res.status(503).json({ message: 'System is currently under maintenance.' });
+    }
+  }
+  next();
+});
 
-async function findUser(email) {
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+const findUser = async (email) => {
   if (isConnected) return await User.findOne({ email });
-  throw new Error("Database not connected. Please configure MONGO_URI in Vercel environment variables.");
-}
+  return null;
+};
 
-async function saveUser(userData) {
+const findUserById = async (id) => {
+  if (isConnected) return await User.findById(id).select('-password');
+  return null;
+};
+
+const saveUser = async (userData) => {
+  const finalUserData = { 
+    ...userData, 
+    role: userData.email === 'bhumigarg704@gmail.com' ? 'admin' : (userData.role || 'user') 
+  };
   if (isConnected) {
-    const user = new User(userData);
+    const user = new User(finalUserData);
     return await user.save();
   }
-  throw new Error("Database not connected. Please configure MONGO_URI in Vercel environment variables.");
-}
-
-async function findUserById(id) {
-  if (isConnected) return await User.findById(id).select('-password');
-  throw new Error("Database not connected. Please configure MONGO_URI in Vercel environment variables.");
-}
+  return null;
+};
 
 // ─── Auth Middleware ──────────────────────────────────────────────────────────
 
-function auth(req, res, next) {
+const auth = (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return res.status(401).json({ message: 'No token provided' });
+  if (!token) return res.status(401).json({ message: 'No token' });
   try {
     req.user = jwt.verify(token, JWT_SECRET);
     next();
   } catch {
     res.status(401).json({ message: 'Invalid token' });
   }
-}
+};
+
+const isAdmin = async (req, res, next) => {
+  try {
+    const user = await findUserById(req.user?.id);
+    if (user && (user.role === 'admin' || user.email.toLowerCase().trim() === 'bhumigarg704@gmail.com')) {
+      return next();
+    }
+    res.status(403).json({ message: 'Access denied. Admin only.' });
+  } catch {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
 
 // ─── Routes ───────────────────────────────────────────────────────────────────
 
-// Health check
-app.get('/api/health', (req, res) => {
-  res.json({
-    status: 'ok',
-    db: isConnected ? 'connected' : 'demo-mode',
-    mongoUri: MONGO_URI ? 'set' : 'missing',
-    env: process.env.NODE_ENV || 'unknown'
-  });
-});
-
-// Signup
+// Auth
 app.post('/api/auth/signup', async (req, res) => {
   try {
+    if (!appSettings.registrationEnabled) return res.status(403).json({ message: 'Registration disabled' });
     const { name, email, password } = req.body;
-    if (!name || !email || !password) {
-      return res.status(400).json({ message: 'All fields are required' });
-    }
-    const existing = await findUser(email);
-    if (existing) return res.status(400).json({ message: 'User already exists' });
+    let user = await findUser(email);
+    if (user) return res.status(400).json({ message: 'User exists' });
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await saveUser({ name, email, password: hashedPassword });
-    const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '7d' });
-    res.status(201).json({ token, user: { id: user._id, name: user.name, email: user.email } });
+    user = await saveUser({ name, email, password: hashedPassword });
+    const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
+    res.status(201).json({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role } });
   } catch (err) {
-    console.error('Signup error:', err);
-    res.status(500).json({ message: 'Signup failed: ' + err.message });
+    res.status(500).json({ message: err.message });
   }
 });
 
-// Login
 app.post('/api/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-    if (!email || !password) return res.status(400).json({ message: 'Email and password required' });
-    
-    console.log(`Login attempt for: ${email}`);
     const user = await findUser(email);
-    
-    if (!user) {
-      console.log(`User not found: ${email}`);
-      const hint = !isConnected ? ' (Server in Demo Mode - DB Not Connected)' : '';
-      return res.status(400).json({ message: 'Invalid credentials' + hint });
-    }
-    
+    if (!user) return res.status(400).json({ message: 'Invalid credentials' });
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      console.log(`Password mismatch for: ${email}`);
-      return res.status(400).json({ message: 'Invalid credentials' });
-    }
+    if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
     
-    const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '7d' });
-    console.log(`Login successful: ${email}`);
-    res.json({ token, user: { id: user._id, name: user.name, email: user.email } });
+    // Auto-promote
+    if (email.toLowerCase().trim() === 'bhumigarg704@gmail.com' && user.role !== 'admin') {
+      user.role = 'admin';
+      await User.findByIdAndUpdate(user._id, { role: 'admin' });
+    }
+
+    const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
+    res.json({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role } });
   } catch (err) {
-    console.error('Login error:', err);
-    res.status(500).json({ message: 'Login failed: ' + err.message });
+    res.status(500).json({ message: err.message });
   }
 });
 
-// Google Login
 app.post('/api/auth/google', async (req, res) => {
   try {
     const { name, email, googleId, picture } = req.body;
@@ -187,113 +189,86 @@ app.post('/api/auth/google', async (req, res) => {
       const pw = await bcrypt.hash(Math.random().toString(36), 10);
       user = await saveUser({ name, email, password: pw, googleId, picture });
     }
-    const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '7d' });
-    res.json({ token, user: { id: user._id, name: user.name, email: user.email, picture: user.picture } });
-  } catch (err) {
-    res.status(500).json({ message: 'Google login failed: ' + err.message });
-  }
-});
-
-// Profile
-app.get('/api/auth/profile', auth, async (req, res) => {
-  try {
-    const user = await findUserById(req.user.id);
-    res.json(user);
-  } catch (err) {
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
-// Update Profile
-app.put('/api/auth/profile', auth, async (req, res) => {
-  try {
-    const { name } = req.body;
-    if (!name) return res.status(400).json({ message: 'Name is required' });
-    if (isConnected) {
-      await User.findByIdAndUpdate(req.user.id, { name });
+    if (email.toLowerCase().trim() === 'bhumigarg704@gmail.com' && user.role !== 'admin') {
+      user.role = 'admin';
+      await User.findByIdAndUpdate(user._id, { role: 'admin' });
     }
-    const updatedUser = await findUserById(req.user.id);
-    res.json(updatedUser);
+    const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
+    res.json({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role, picture: user.picture } });
   } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+app.get('/api/auth/profile', auth, async (req, res) => {
+  const user = await findUserById(req.user.id);
+  res.json(user);
+});
+
+// Admin
+app.get('/api/admin/stats', auth, isAdmin, async (req, res) => {
+  try {
+    const totalUsers = await User.countDocuments();
+    const totalCompressions = await Compression.countDocuments();
+    const recentUsers = await User.find().sort({ createdAt: -1 }).limit(10).select('-password');
+    const recentCompressions = await Compression.find().sort({ createdAt: -1 }).limit(10);
+    res.json({ totalUsers, totalCompressions, recentUsers, recentCompressions, settings: appSettings });
+  } catch {
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-// Forgot Password
+app.post('/api/admin/settings', auth, isAdmin, (req, res) => {
+  const { maintenanceMode, registrationEnabled } = req.body;
+  if (maintenanceMode !== undefined) appSettings.maintenanceMode = maintenanceMode;
+  if (registrationEnabled !== undefined) appSettings.registrationEnabled = registrationEnabled;
+  res.json({ message: 'Settings updated', settings: appSettings });
+});
+
+// Compression History
+app.post('/api/compression/save', auth, async (req, res) => {
+  try {
+    const { fileName, fileType, originalSize, compressedSize, compressionRatio } = req.body;
+    await new Compression({ userId: req.user.id, fileName, fileType, originalSize, compressedSize, compressionRatio }).save();
+    res.status(201).json({ message: 'Saved' });
+  } catch {
+    res.status(500).json({ message: 'Error saving' });
+  }
+});
+
+app.get('/api/compression/history', auth, async (req, res) => {
+  const history = await Compression.find({ userId: req.user.id }).sort({ createdAt: -1 });
+  res.json(history);
+});
+
+// Forgot/Reset Password
 app.post('/api/auth/forgot-password', async (req, res) => {
   try {
     const { email } = req.body;
     const user = await findUser(email);
     if (!user) return res.status(404).json({ message: 'User not found' });
     const token = crypto.randomBytes(20).toString('hex');
-    const frontendUrl = process.env.FRONTEND_URL || 'https://shrink-now-shop.vercel.app';
-    if (isConnected) {
-      await User.findOneAndUpdate({ email }, {
-        resetPasswordToken: token,
-        resetPasswordExpires: Date.now() + 3600000
-      });
-    }
-    console.log(`Reset URL: ${frontendUrl}/reset-password/${token}`);
-    res.json({ message: `Test Mode: Go to ${frontendUrl}/reset-password/${token} to reset` });
-  } catch (err) {
+    const origin = req.headers.origin || 'https://shrink-now.shop';
+    await User.findOneAndUpdate({ email }, { resetPasswordToken: token, resetPasswordExpires: Date.now() + 3600000 });
+    const resetUrl = `${origin}/reset-password/${token}`;
+    res.json({ message: `Password reset link generated! Click here: ${resetUrl}` });
+  } catch {
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-// Reset Password
 app.post('/api/auth/reset-password/:token', async (req, res) => {
   try {
     const { token } = req.params;
     const { password } = req.body;
-    const user = isConnected
-      ? await User.findOne({ resetPasswordToken: token, resetPasswordExpires: { $gt: Date.now() } })
-      : null;
-    if (!user) return res.status(400).json({ message: 'Token invalid or expired' });
+    const user = await User.findOne({ resetPasswordToken: token, resetPasswordExpires: { $gt: Date.now() } });
+    if (!user) return res.status(400).json({ message: 'Invalid or expired token' });
     const hashedPassword = await bcrypt.hash(password, 10);
-    await User.findByIdAndUpdate(user._id, {
-      $set: { password: hashedPassword },
-      $unset: { resetPasswordToken: 1, resetPasswordExpires: 1 }
-    });
-    res.json({ message: 'Password reset successfully!' });
-  } catch (err) {
+    await User.findByIdAndUpdate(user._id, { $set: { password: hashedPassword }, $unset: { resetPasswordToken: 1, resetPasswordExpires: 1 } });
+    res.json({ message: 'Password reset successful' });
+  } catch {
     res.status(500).json({ message: 'Server error' });
   }
 });
-
-// Save Compression
-app.post('/api/compression/save', auth, async (req, res) => {
-  try {
-    const { fileName, fileType, originalSize, compressedSize, compressionRatio } = req.body;
-    if (isConnected) {
-      await new Compression({ userId: req.user.id, fileName, fileType, originalSize, compressedSize, compressionRatio }).save();
-    }
-    res.status(201).json({ message: 'Saved' });
-  } catch (err) {
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
-// Compression History
-app.get('/api/compression/history', auth, async (req, res) => {
-  try {
-    if (isConnected) {
-      const history = await Compression.find({ userId: req.user.id }).sort({ createdAt: -1 });
-      return res.json(history);
-    }
-    res.json([]);
-  } catch (err) {
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
-// Catch-all for API debugging
-app.use('/api/*', (req, res) => {
-  res.status(404).json({ 
-    message: `API Route not found: ${req.originalUrl}`,
-    hint: 'Check if the route is defined in api/index.js'
-  });
-});
-
-// ─── Export for Vercel ────────────────────────────────────────────────────────
 
 module.exports = app;

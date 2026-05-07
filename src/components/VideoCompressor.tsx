@@ -15,8 +15,14 @@ const VideoCompressor: React.FC<VideoCompressorProps> = ({ file, onReset }) => {
   const [loading, setLoading] = useState(false);
   const [compressing, setCompressing] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [targetSize, setTargetSize] = useState(Math.round(file.size / 1024 / 2));
-  const [unit, setUnit] = useState<'KB' | 'MB'>(file.size > 1024 * 1024 ? 'MB' : 'KB');
+  const initialIsMB = file.size > 1024 * 1024;
+  const initialUnit = initialIsMB ? 'MB' : 'KB';
+  const initialTargetSize = initialIsMB 
+    ? parseFloat((file.size / (1024 * 1024) / 2).toFixed(2))
+    : Math.round(file.size / 1024 / 2);
+
+  const [targetSize, setTargetSize] = useState(initialTargetSize);
+  const [unit, setUnit] = useState<'KB' | 'MB'>(initialUnit);
 
   const [result, setResult] = useState<{ url: string; size: number; name: string } | null>(null);
   const ffmpegRef = useRef(new FFmpeg());
@@ -43,11 +49,13 @@ const VideoCompressor: React.FC<VideoCompressorProps> = ({ file, onReset }) => {
   const applyPreset = (p: string) => {
     setPreset(p);
     if (p === 'youtube') {
-      setTargetSize(Math.round(file.size / 1024 / 1.2));
-      setUnit('MB');
+      const targetBytes = file.size / 1.2;
+      setUnit(targetBytes > 1024 * 1024 ? 'MB' : 'KB');
+      setTargetSize(targetBytes > 1024 * 1024 ? parseFloat((targetBytes / (1024 * 1024)).toFixed(2)) : Math.round(targetBytes / 1024));
     } else if (p === 'ig-reel') {
-      setTargetSize(Math.min(15, Math.round(file.size / 1024 / 4)));
-      setUnit('MB');
+      const targetBytes = Math.min(15 * 1024 * 1024, file.size / 4);
+      setUnit(targetBytes > 1024 * 1024 ? 'MB' : 'KB');
+      setTargetSize(targetBytes > 1024 * 1024 ? parseFloat((targetBytes / (1024 * 1024)).toFixed(2)) : Math.round(targetBytes / 1024));
     } else if (p === 'whatsapp') {
       setTargetSize(16);
       setUnit('MB');
@@ -176,14 +184,24 @@ const VideoCompressor: React.FC<VideoCompressorProps> = ({ file, onReset }) => {
             value={targetSize} 
             onChange={(e) => setTargetSize(parseFloat(e.target.value))}
             className="glass"
-            style={{ flex: '1 1 200px', padding: '15px', fontSize: '1.1rem', background: 'rgba(0,0,0,0.2)', color: 'white', border: '1px solid var(--glass-border)', borderRadius: '12px' }}
+            style={{ flex: '1 1 200px', padding: '15px', fontSize: '1.1rem', background: 'var(--surface-color)', color: 'var(--text-primary)', border: '1px solid var(--glass-border)', borderRadius: '12px' }}
             placeholder="e.g. 10"
           />
           <select 
             value={unit} 
-            onChange={(e) => setUnit(e.target.value as 'KB' | 'MB')}
+            onChange={(e) => {
+              const newUnit = e.target.value as 'KB' | 'MB';
+              if (newUnit !== unit) {
+                if (newUnit === 'MB') {
+                  setTargetSize(parseFloat((targetSize / 1024).toFixed(2)));
+                } else {
+                  setTargetSize(Math.round(targetSize * 1024));
+                }
+                setUnit(newUnit);
+              }
+            }}
             className="glass"
-            style={{ width: '100px', padding: '15px', fontSize: '1rem', background: 'var(--bg-color)', color: 'white', border: '1px solid var(--glass-border)', borderRadius: '12px' }}
+            style={{ width: '100px', padding: '15px', fontSize: '1rem', background: 'var(--surface-color)', color: 'var(--text-primary)', border: '1px solid var(--glass-border)', borderRadius: '12px' }}
           >
             <option value="KB">KB</option>
             <option value="MB">MB</option>

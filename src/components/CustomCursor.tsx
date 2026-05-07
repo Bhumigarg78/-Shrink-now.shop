@@ -77,7 +77,7 @@ const CustomCursor: React.FC = () => {
           x: position.x,
           y: position.y,
           scale: isClicking ? 0.8 : (isPointer ? 1.5 : 1),
-          backgroundColor: isPointer ? 'rgba(59, 130, 246, 0.1)' : 'rgba(255, 255, 255, 0.05)',
+          backgroundColor: isPointer ? 'rgba(59, 130, 246, 0.1)' : 'var(--cursor-ring-bg)',
         }}
         transition={{ type: 'spring', damping: 25, stiffness: 400, mass: 0.5 }}
         style={{
@@ -87,7 +87,7 @@ const CustomCursor: React.FC = () => {
           width: 40,
           height: 40,
           borderRadius: '50%',
-          border: '1px solid rgba(255, 255, 255, 0.2)',
+          border: '1px solid var(--cursor-ring-border)',
           backdropFilter: 'blur(2px)',
           translateX: '-50%',
           translateY: '-50%',
@@ -107,12 +107,12 @@ const CustomCursor: React.FC = () => {
           width: 6,
           height: 6,
           borderRadius: '50%',
-          backgroundColor: 'white',
+          backgroundColor: 'var(--cursor-dot)',
           translateX: '-50%',
           translateY: '-50%',
           pointerEvents: 'none',
           zIndex: 10002,
-          boxShadow: '0 0 10px white'
+          boxShadow: '0 0 10px var(--cursor-dot)'
         }}
       />
     </>

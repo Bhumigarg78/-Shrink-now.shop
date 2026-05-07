@@ -58,9 +58,9 @@ const Home = () => {
         description="The ultimate online tool for compressing images, videos, and PDFs. Shrink files fast with zero quality loss."
       />
       {/* 3D Background Orbs */}
-      <div style={{ position: 'absolute', top: '5%', left: '10%', width: '150px', height: '150px', background: 'radial-gradient(circle at 30% 30%, rgba(59, 130, 246, 0.4), rgba(59, 130, 246, 0.1))', filter: 'blur(20px)', borderRadius: '50%', zIndex: -1, boxShadow: 'inset -20px -20px 50px rgba(0,0,0,0.2), 20px 20px 60px rgba(0,0,0,0.1)' }} className="float-3d"></div>
-      <div style={{ position: 'absolute', top: '25%', right: '15%', width: '200px', height: '200px', background: 'radial-gradient(circle at 30% 30%, rgba(139, 92, 246, 0.3), rgba(139, 92, 246, 0.1))', filter: 'blur(30px)', borderRadius: '50%', zIndex: -1, boxShadow: 'inset -20px -20px 50px rgba(0,0,0,0.2), 20px 20px 60px rgba(0,0,0,0.1)' }} className="float-3d"></div>
-      <div style={{ position: 'absolute', bottom: '15%', left: '20%', width: '120px', height: '120px', background: 'radial-gradient(circle at 30% 30%, rgba(236, 72, 153, 0.3), rgba(236, 72, 153, 0.1))', filter: 'blur(15px)', borderRadius: '50%', zIndex: -1, boxShadow: 'inset -10px -10px 30px rgba(0,0,0,0.2), 10px 10px 40px rgba(0,0,0,0.1)' }} className="float-3d"></div>
+      <div style={{ position: 'absolute', top: '5%', left: '10%', width: '150px', height: '150px', background: `radial-gradient(circle at 30% 30%, rgba(59, 130, 246, var(--orb-opacity)), rgba(59, 130, 246, 0.05))`, filter: 'blur(20px)', borderRadius: '50%', zIndex: -1, boxShadow: 'inset -20px -20px 50px rgba(0,0,0,0.1), 20px 20px 60px rgba(0,0,0,0.05)' }} className="float-3d"></div>
+      <div style={{ position: 'absolute', top: '25%', right: '15%', width: '200px', height: '200px', background: `radial-gradient(circle at 30% 30%, rgba(139, 92, 246, var(--orb-opacity)), rgba(139, 92, 246, 0.05))`, filter: 'blur(30px)', borderRadius: '50%', zIndex: -1, boxShadow: 'inset -20px -20px 50px rgba(0,0,0,0.1), 20px 20px 60px rgba(0,0,0,0.05)' }} className="float-3d"></div>
+      <div style={{ position: 'absolute', bottom: '15%', left: '20%', width: '120px', height: '120px', background: `radial-gradient(circle at 30% 30%, rgba(236, 72, 153, var(--orb-opacity)), rgba(236, 72, 153, 0.05))`, filter: 'blur(15px)', borderRadius: '50%', zIndex: -1, boxShadow: 'inset -10px -10px 30px rgba(0,0,0,0.1), 10px 10px 40px rgba(0,0,0,0.05)' }} className="float-3d"></div>
 
       {/* Floating Sparkles */}
       {[...Array(6)].map((_, i) => (

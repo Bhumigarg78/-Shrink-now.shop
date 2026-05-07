@@ -61,7 +61,7 @@ const Login: React.FC = () => {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
-        className="glass" 
+        className="glass login-card" 
         style={{ 
           width: '100%', 
           maxWidth: '480px', 
@@ -72,6 +72,13 @@ const Login: React.FC = () => {
           border: '1px solid rgba(255, 255, 255, 0.1)'
         }}
       >
+        <style>{`
+          @media (max-width: 480px) {
+            .login-card {
+              padding: 40px 20px !important;
+            }
+          }
+        `}</style>
         {/* Back Button */}
         <Link 
           to="/" 

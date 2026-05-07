@@ -16,21 +16,33 @@
   --glass-bg: rgba(22, 22, 26, 0.7);
   --glass-border: rgba(255, 255, 255, 0.08);
   --glass-hover: rgba(59, 130, 246, 0.05);
+  --grad-color-1: #ffffff;
+  --grad-color-2: #94a3b8;
+  --orb-opacity: 0.15;
+  --cursor-ring-bg: rgba(255, 255, 255, 0.05);
+  --cursor-ring-border: rgba(255, 255, 255, 0.2);
+  --cursor-dot: #ffffff;
   
   color-scheme: dark;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 [data-theme='light'] {
-  --bg-color: #f8fafc;
+  --bg-color: #f5f7ff;
   --surface-color: #ffffff;
-  --surface-hover: #f1f5f9;
-  --text-primary: #1e293b;
-  --text-secondary: #475569;
-  --border-color: rgba(0, 0, 0, 0.06);
-  --glass-bg: rgba(255, 255, 255, 0.85);
-  --glass-border: rgba(59, 130, 246, 0.15);
-  --glass-hover: rgba(59, 130, 246, 0.08);
+  --surface-hover: #f0f3ff;
+  --text-primary: #1e1b4b; /* Deep Indigo 950 */
+  --text-secondary: #475569; /* Slate 600 */
+  --border-color: rgba(99, 102, 241, 0.1);
+  --glass-bg: rgba(255, 255, 255, 0.75);
+  --glass-border: rgba(99, 102, 241, 0.15);
+  --glass-hover: rgba(99, 102, 241, 0.05);
+  --grad-color-1: #1e1b4b;
+  --grad-color-2: #4338ca;
+  --orb-opacity: 0.1;
+  --cursor-ring-bg: rgba(30, 27, 75, 0.05);
+  --cursor-ring-border: rgba(30, 27, 75, 0.2);
+  --cursor-dot: #1e1b4b;
   
   color-scheme: light;
 }
@@ -64,10 +76,10 @@ a, button, input, select, textarea, [role="button"] {
 }
 
 .glass {
-  background: rgba(22, 22, 26, 0.4);
+  background: var(--glass-bg);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--glass-border);
   border-radius: 24px;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -221,7 +233,7 @@ p {
 }
 
 .moving-gradient {
-  background: linear-gradient(-45deg, #fff, #94a3b8, #fff, var(--accent-color));
+  background: linear-gradient(-45deg, var(--grad-color-1), var(--grad-color-2), var(--grad-color-1), var(--accent-color));
   background-size: 400% 400%;
   animation: gradient-move 15s ease infinite;
   -webkit-background-clip: text;
@@ -312,6 +324,10 @@ input:focus {
 
   /* Hide background orbs on mobile to reduce clutter and improve performance */
   .app-wrapper > div[style*="absolute"] {
+    display: none !important;
+  }
+
+  .hide-mobile {
     display: none !important;
   }
 }

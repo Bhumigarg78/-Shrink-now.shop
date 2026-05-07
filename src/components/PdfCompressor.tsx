@@ -13,8 +13,14 @@ interface PdfCompressorProps {
 const PdfCompressor: React.FC<PdfCompressorProps> = ({ file, onReset }) => {
   const [compressing, setCompressing] = useState(false);
   const [level, setLevel] = useState<'standard' | 'aggressive'>('standard');
-  const [targetSize, setTargetSize] = useState(Math.round(file.size / 1024 / 1.5));
-  const [unit, setUnit] = useState<'KB' | 'MB'>(file.size > 1024 * 1024 ? 'MB' : 'KB');
+  const initialIsMB = file.size > 1024 * 1024;
+  const initialUnit = initialIsMB ? 'MB' : 'KB';
+  const initialTargetSize = initialIsMB 
+    ? parseFloat((file.size / (1024 * 1024) / 1.5).toFixed(2))
+    : Math.round(file.size / 1024 / 1.5);
+
+  const [targetSize, setTargetSize] = useState(initialTargetSize);
+  const [unit, setUnit] = useState<'KB' | 'MB'>(initialUnit);
   const [result, setResult] = useState<{ url: string; size: number; name: string } | null>(null);
 
   const handleCompress = async () => {
@@ -101,14 +107,24 @@ const PdfCompressor: React.FC<PdfCompressorProps> = ({ file, onReset }) => {
             value={targetSize} 
             onChange={(e) => setTargetSize(parseFloat(e.target.value))}
             className="glass"
-            style={{ flex: '1 1 200px', padding: '15px', fontSize: '1.1rem', background: 'rgba(0,0,0,0.2)', color: 'white', border: '1px solid var(--glass-border)', borderRadius: '12px' }}
+            style={{ flex: '1 1 200px', padding: '15px', fontSize: '1.1rem', background: 'var(--surface-color)', color: 'var(--text-primary)', border: '1px solid var(--glass-border)', borderRadius: '12px' }}
             placeholder="e.g. 2"
           />
           <select 
             value={unit} 
-            onChange={(e) => setUnit(e.target.value as 'KB' | 'MB')}
+            onChange={(e) => {
+              const newUnit = e.target.value as 'KB' | 'MB';
+              if (newUnit !== unit) {
+                if (newUnit === 'MB') {
+                  setTargetSize(parseFloat((targetSize / 1024).toFixed(2)));
+                } else {
+                  setTargetSize(Math.round(targetSize * 1024));
+                }
+                setUnit(newUnit);
+              }
+            }}
             className="glass"
-            style={{ width: '100px', padding: '15px', fontSize: '1rem', background: 'var(--bg-color)', color: 'white', border: '1px solid var(--glass-border)', borderRadius: '12px' }}
+            style={{ width: '100px', padding: '15px', fontSize: '1rem', background: 'var(--surface-color)', color: 'var(--text-primary)', border: '1px solid var(--glass-border)', borderRadius: '12px' }}
           >
             <option value="KB">KB</option>
             <option value="MB">MB</option>

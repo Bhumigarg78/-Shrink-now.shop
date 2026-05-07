@@ -77,16 +77,16 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="admin-panel-container container" style={{ padding: '40px 20px', minHeight: '100vh' }}>
+    <div className="admin-panel-container container section-padding" style={{ minHeight: '100vh' }}>
       <style>{`
-        /* Pink shade for Admin Panel in Light Mode */
+        /* Cyan/Indigo shade for Admin Panel in Light Mode */
         html[data-theme="light"] .admin-panel-container {
-          --surface-color: rgba(253, 232, 240, 0.8);
-          --glass-border: rgba(236, 72, 153, 0.25);
-          --accent-color: #ec4899;
-          --text-primary: #831843;
-          --text-secondary: #be185d;
-          background: linear-gradient(135deg, #fdf2f8 0%, #fbcfe8 100%);
+          --surface-color: rgba(236, 254, 255, 0.8);
+          --glass-border: rgba(6, 182, 212, 0.25);
+          --accent-color: #0891b2;
+          --text-primary: #164e63;
+          --text-secondary: #0891b2;
+          background: linear-gradient(135deg, #ecfeff 0%, #e0e7ff 100%);
           border-radius: 24px;
         }
         
@@ -95,13 +95,55 @@ const AdminDashboard = () => {
           border: 1px solid rgba(236, 72, 153, 0.3);
           box-shadow: 0 8px 32px 0 rgba(236, 72, 153, 0.1);
         }
+
+        .admin-header {
+          display: flex;
+          align-items: center;
+          gap: 20px;
+          margin-bottom: 40px;
+        }
+
+        .admin-badge {
+          margin-left: auto;
+          background: rgba(59, 130, 246, 0.1);
+          color: var(--accent-color);
+          padding: 6px 15px;
+          borderRadius: 20px;
+          fontSize: 0.8rem;
+          fontWeight: bold;
+          display: flex;
+          alignItems: center;
+          gap: 8px;
+        }
+
+        @media (max-width: 768px) {
+          .admin-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+          }
+          .admin-badge {
+            margin-left: 0;
+          }
+          .admin-panel-container {
+            border-radius: 0 !important;
+          }
+          .stats-card {
+            padding: 20px !important;
+            gap: 15px !important;
+          }
+          .stats-icon {
+            width: 50px !important;
+            height: 50px !important;
+          }
+        }
       `}</style>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '40px' }}>
+      <div className="admin-header">
         <Link to="/" className="btn-secondary" style={{ padding: '10px', borderRadius: '12px' }}>
           <ArrowLeft size={20} />
         </Link>
-        <h1 style={{ margin: 0, fontSize: '2.5rem' }}>Admin <span style={{ color: 'var(--accent-color)' }}>Panel</span></h1>
-        <div style={{ marginLeft: 'auto', background: 'rgba(59, 130, 246, 0.1)', color: 'var(--accent-color)', padding: '6px 15px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <h1 style={{ margin: 0 }}>Admin <span style={{ color: 'var(--accent-color)' }}>Panel</span></h1>
+        <div className="admin-badge">
           <Shield size={14} />
           Super Admin Access
         </div>
@@ -119,21 +161,21 @@ const AdminDashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
-            className="glass"
+            className="glass stats-card"
             style={{ padding: '30px', display: 'flex', alignItems: 'center', gap: '25px' }}
           >
-            <div style={{ background: `${item.color}15`, width: '60px', height: '60px', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: item.color }}>
+            <div className="stats-icon" style={{ background: `${item.color}15`, width: '60px', height: '60px', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: item.color, flexShrink: 0 }}>
               {item.icon}
             </div>
             <div>
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', margin: 0 }}>{item.title}</p>
-              <h2 style={{ margin: 0, fontSize: '1.8rem' }}>{item.value}</h2>
+              <h2 style={{ margin: 0 }}>{item.value}</h2>
             </div>
           </motion.div>
         ))}
       </div>
 
-      <div className="grid-responsive" style={{ gap: '30px', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))' }}>
+      <div className="grid-responsive" style={{ gap: '30px', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 400px), 1fr))' }}>
         {/* Recent Users */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -147,17 +189,17 @@ const AdminDashboard = () => {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
             {stats?.recentUsers.map((user, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '15px', padding: '15px', borderRadius: '15px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--glass-border)' }}>
-                <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'var(--primary-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '15px', padding: '15px', borderRadius: '15px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--glass-border)', overflow: 'hidden' }}>
+                <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'var(--primary-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', flexShrink: 0 }}>
                   {user.name[0]}
                 </div>
-                <div style={{ flex: 1 }}>
-                  <p style={{ margin: 0, fontWeight: 'bold' }}>{user.name}</p>
-                  <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{user.email}</p>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ margin: 0, fontWeight: 'bold', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.name}</p>
+                  <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.email}</p>
                 </div>
-                <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '5px', flexShrink: 0 }}>
                   <Calendar size={12} />
-                  {new Date(user.createdAt).toLocaleDateString()}
+                  <span className="hide-mobile">{new Date(user.createdAt).toLocaleDateString()}</span>
                 </div>
               </div>
             ))}
@@ -178,11 +220,11 @@ const AdminDashboard = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
             {stats?.recentCompressions?.length ? stats.recentCompressions.map((comp, i) => (
               <div key={i} style={{ padding: '15px', borderRadius: '15px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--glass-border)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                  <span style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>{comp.fileName}</span>
-                  <span style={{ color: 'var(--accent-color)', fontSize: '0.8rem', fontWeight: 'bold' }}>-{comp.compressionRatio}%</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px', gap: '10px' }}>
+                  <span style={{ fontWeight: 'bold', fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{comp.fileName}</span>
+                  <span style={{ color: 'var(--accent-color)', fontSize: '0.8rem', fontWeight: 'bold', flexShrink: 0 }}>-{comp.compressionRatio}%</span>
                 </div>
-                <div style={{ display: 'flex', gap: '15px', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                <div style={{ display: 'flex', gap: '15px', fontSize: '0.75rem', color: 'var(--text-secondary)', flexWrap: 'wrap' }}>
                   <span>{comp.fileType.toUpperCase()}</span>
                   <span>{(comp.originalSize / 1024 / 1024).toFixed(2)} MB &rarr; {(comp.compressedSize / 1024 / 1024).toFixed(2)} MB</span>
                 </div>
@@ -242,6 +284,7 @@ const AdminDashboard = () => {
         </div>
       </motion.div>
     </div>
+
   );
 };
 

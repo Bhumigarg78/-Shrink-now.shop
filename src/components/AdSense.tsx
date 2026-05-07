@@ -1,4 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
+
+declare global {
+  interface Window {
+    adsbygoogle: any[];
+  }
+}
 
 interface AdSenseProps {
   adSlot: string;
@@ -7,13 +13,20 @@ interface AdSenseProps {
 }
 
 const AdSense: React.FC<AdSenseProps> = ({ adSlot, adFormat = 'auto', fullWidthResponsive = true }) => {
+  const isLoaded = useRef(false);
+
   useEffect(() => {
+    if (isLoaded.current) return;
+    
     try {
-      // @ts-ignore
       if (typeof window !== 'undefined') {
         (window.adsbygoogle = window.adsbygoogle || []).push({});
+        isLoaded.current = true;
       }
-    } catch (e) {
+    } catch (e: any) {
+      if (e && e.message && e.message.includes('already have ads')) {
+        return;
+      }
       console.error("AdSense error:", e);
     }
   }, [adSlot]);

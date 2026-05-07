@@ -113,12 +113,27 @@ const Profile: React.FC = () => {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass" 
+          className="glass profile-card" 
           style={{ padding: '40px', position: 'relative', overflow: 'hidden', marginBottom: '30px' }}
         >
+          <style>{`
+            @media (max-width: 768px) {
+              .profile-card {
+                padding: 25px 20px !important;
+              }
+              .profile-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px !important;
+              }
+              .profile-header h1 {
+                margin-top: 10px;
+              }
+            }
+          `}</style>
           <div style={{ position: 'absolute', top: '-50px', right: '-50px', width: '200px', height: '200px', background: 'var(--primary-gradient)', filter: 'blur(100px)', opacity: 0.3 }}></div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '30px', marginBottom: '40px', position: 'relative', flexWrap: 'wrap' }}>
+          <div className="profile-header" style={{ display: 'flex', alignItems: 'center', gap: '30px', marginBottom: '40px', position: 'relative', flexWrap: 'wrap' }}>
             <div style={{ width: 'clamp(80px, 15vw, 100px)', height: 'clamp(80px, 15vw, 100px)', borderRadius: '50%', background: 'var(--primary-gradient)', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: 'clamp(2rem, 5vw, 3rem)', fontWeight: 'bold', color: 'white', flexShrink: 0 }}>
               {user?.name?.[0].toUpperCase()}
             </div>
